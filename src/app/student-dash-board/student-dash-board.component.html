@@ -1,0 +1,125 @@
+<nav class="bg-yellow-500 text-white p-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <a class="text-xl font-bold" href="#">Student Dashboard</a>
+    <div class="flex items-center gap-4">
+      <div class="text-lg">
+        Name: <span class="font-semibold">{{ student.name }}</span> | Roll No: <span class="font-semibold">{{ roll }}</span>
+      </div>
+      <button
+        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+        (click)="logout()"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+  <div class="container mx-auto mt-8 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto hover:scale-105 transition-transform duration-300">
+      <h5 class="text-center text-2xl font-semibold text-yellow-600">Student Progress</h5>
+      <div class="grid grid-cols-4 gap-4 text-center mt-6">
+        <div class="col">
+          <p>Total Questions</p>
+          <h6>35</h6>
+        </div>
+        <div class="col">
+          <p>Submitted Answers</p>
+          <h6>{{submitted}}</h6>
+        </div>
+        <div class="col">
+          <p>Approved by Teacher</p>
+          <h6>{{approved}}</h6>
+        </div>
+        <div class="col">
+          <p>Correct / Incorrect</p>
+          <h6>{{correct}}/ {{incorrect}}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Table Section -->
+<!-- Table Section -->
+<div class="container mx-auto mt-5 px-4">
+    <table class="table-auto w-full bg-white shadow-md rounded-lg overflow-hidden">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Question No</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Question Description</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Check if there are no questions -->
+        <tr *ngIf="userData.questions.length === 0">
+          <td colspan="3" class="text-center py-4 px-6 text-gray-500">No questions uploaded yet</td>
+        </tr>
+  
+        <!-- Iterate through each question -->
+        <tr *ngFor="let question of userData.questions; let i = index" class="border-b">
+          <td class="px-6 py-3 text-sm text-gray-800">{{ i + 1 }}</td> <!-- Display Question No -->
+  
+          <td>
+            <!-- Display Question Description -->
+            <div
+              class="question-container"
+              style="max-width: 300px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+              {{ question.description }}
+            </div>
+          
+            <!-- Show "Read More" link if the description exceeds 100 characters -->
+            <ng-container *ngIf="question.description.length > 100">
+              <a href="#" (click)="toggleQuestionDetails(question.id)">Read More</a>
+            </ng-container>
+          
+            <!-- Solve it link -->
+            <ng-container *ngFor="let statusItem of filteredStatusList">
+              <!-- Only display the statusItem for the corresponding question and if submissionStatus is 0 -->
+              <ng-container *ngIf="statusItem?.questionId === question.id && statusItem?.submissionStatus === 0">
+                <a [routerLink]="['/answer-panel', roll, question.id, i + 1]">Solve it</a>
+              </ng-container>
+            </ng-container>
+            
+           
+          </td>
+  
+          <td class="px-6 py-3">
+            <!-- Status Indicators -->
+            <ng-container *ngFor="let statusItem of filteredStatusList">
+              <!-- Only display the statusItem for the corresponding question -->
+              <ng-container *ngIf="statusItem?.questionId === question.id">
+                  <span 
+        [ngClass]="{
+          'bg-green-500': statusItem.submissionStatus === 1,
+          'bg-gray-300': statusItem.submissionStatus === 0
+        }" 
+        class="status-indicator inline-block w-3 h-3 rounded-full mr-2">
+      </span>
+
+      <!-- Approved Status Indicator -->
+      <span 
+        [ngClass]="{
+          'bg-green-500': statusItem.approvedStatus === 1,
+          'bg-gray-300': statusItem.approvedStatus === 0
+        }" 
+        class="status-indicator inline-block w-3 h-3 rounded-full mr-2">
+      </span>
+
+      <!-- Correctness Status Indicator -->
+      <span 
+        [ngClass]="{
+          'bg-green-500': statusItem.isCorrect === 1,
+          'bg-red-500': statusItem.isCorrect === 2,
+          'bg-gray-300': statusItem.isCorrect === 0 || statusItem.isCorrect == null
+        }" 
+        class="status-indicator inline-block w-3 h-3 rounded-full">
+      </span>
+                </ng-container>
+              </ng-container>
+           
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<table>
